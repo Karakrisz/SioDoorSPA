@@ -374,7 +374,7 @@ const _inlineRuntimeConfig = {
             "name": "gql:default"
           },
           "preferGETQueries": false,
-          "host": "https://yousite.hu/gteq/graphql",
+          "host": "https://yousite.hu/siodoor/graphql",
           "corsOptions": {
             "mode": "cors",
             "credentials": "include"
@@ -1367,7 +1367,7 @@ function defineRenderHandler(handler) {
   });
 }
 
-const config = {"default":{"token":{"type":"Bearer","name":"Authorization"},"proxyCookies":true,"tokenStorage":{"mode":"cookie","cookieOptions":{"maxAge":604800,"secure":false},"name":"gql:default"},"preferGETQueries":false,"host":"https://yousite.hu/gteq/graphql","corsOptions":{"mode":"cors","credentials":"include"}}};
+const config = {"default":{"token":{"type":"Bearer","name":"Authorization"},"proxyCookies":true,"tokenStorage":{"mode":"cookie","cookieOptions":{"maxAge":604800,"secure":false},"name":"gql:default"},"preferGETQueries":false,"host":"https://yousite.hu/siodoor/graphql","corsOptions":{"mode":"cors","credentials":"include"}}};
 const clients = {};
 const GqlNitro = { clients, config };
 
