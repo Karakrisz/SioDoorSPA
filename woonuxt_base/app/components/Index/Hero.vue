@@ -4,7 +4,7 @@
       <div class="container mx-auto grid lg:grid-cols-2 h-full">
         <!-- Left: szöveg + gomb -->
         <div class="flex flex-col justify-center bg-[#FAFAFA] px-6 sm:px-12 py-16 lg:py-28 text-left">
-            <h1 class="pr-10  font-['Red_Hat_Display'] text-[32px] lg:text-[55px]" style="color: var(--Dark, #242424); font-style: normal; font-weight: 700; line-height: 70px;">
+            <h1 class="pr-10  font-['Red_Hat_Display'] text-[30px] lg:text-[55px]" style="color: var(--Dark, #242424); font-style: normal; font-weight: 700;">
             Automata Kapuk
             <br class="hidden sm:block" />
             és Garázskapuk
@@ -21,7 +21,7 @@
         </div>
   
         <!-- Right: kép beépített árnyékkal -->
-        <div class="absolute right-0 h-full w-1/2">
+        <div class="relative lg:absolute lg:right-0 lg:h-full lg:w-1/2">
           <img
             src="/img/hero.webp"
             alt="Modern automata kétszárnyú kapu meghajtóval"

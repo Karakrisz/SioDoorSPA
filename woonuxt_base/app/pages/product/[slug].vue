@@ -52,18 +52,11 @@ const updateSelectedVariations = (variations: VariationAttribute[]): void => {
   attrValues.value = variations.map((el) => ({ attributeName: el.name, attributeValue: el.value }));
   const clonedVariations = JSON.parse(JSON.stringify(variations));
   const getActiveVariation = product.value.variations?.nodes.filter((variation: any) => {
-    // If there is any variation of type ANY set the value to ''
-
     if (variation.attributes) {
-      // Set the value of the variation of type ANY to ''
       indexOfTypeAny.value.forEach((index) => (clonedVariations[index].value = ''));
-
       return arraysEqual(formatArray(variation.attributes.nodes), formatArray(clonedVariations));
     }
-
   });
-
-
 
   if (getActiveVariation[0]) activeVariation.value = getActiveVariation[0];
   selectProductInput.value.variationId = activeVariation.value?.databaseId ?? null;
@@ -75,6 +68,7 @@ const stockStatus = computed(() => {
   if (isVariableProduct.value) return activeVariation.value?.stockStatus || StockStatusEnum.OUT_OF_STOCK;
   return type.value?.stockStatus || StockStatusEnum.OUT_OF_STOCK;
 });
+
 const disabledAddToCart = computed(() => {
   if (isSimpleProduct.value) return !type.value || stockStatus.value === StockStatusEnum.OUT_OF_STOCK || isUpdatingCart.value;
   return !type.value || stockStatus.value === StockStatusEnum.OUT_OF_STOCK || !activeVariation.value || isUpdatingCart.value;
@@ -82,7 +76,7 @@ const disabledAddToCart = computed(() => {
 </script>
 
 <template>
-  <main class="container relative py-6">
+  <main class="container relative py-6" style="font-family: 'Red Hat Display';">
     <div v-if="product">
       <SEOHead :info="product" />
       <Breadcrumb v-if="storeSettings.showBreadcrumbOnSingleProduct" :product class="mb-6" />
@@ -100,7 +94,7 @@ const disabledAddToCart = computed(() => {
         <div class="lg:max-w-md xl:max-w-lg md:py-2 w-full">
           <div class="flex justify-between mb-4">
             <div class="flex-1">
-              <h1 class="flex flex-wrap items-center gap-2 mb-2 text-2xl font-sesmibold">
+              <h1 class="flex flex-wrap items-center gap-2 mb-2 text-2xl font-semibold" style="font-family: 'Red Hat Display'; color: #242424;">
                 {{ type.name }}
                 <LazyWPAdminLink :link="`/wp-admin/post.php?post=${product.databaseId}&action=edit`">Edit</LazyWPAdminLink>
               </h1>
@@ -108,7 +102,7 @@ const disabledAddToCart = computed(() => {
             </div>
           </div>
 
-          <div class="grid gap-2 my-8 text-sm empty:hidden">
+          <div class="grid gap-2 my-8 text-sm empty:hidden" style="font-family: 'Red Hat Display';">
             <div v-if="!isExternalProduct" class="flex items-center gap-2">
               <span class="text-stone-400">{{ $t('messages.shop.availability') }}: </span>
               <StockStatus :stock-status @updated="mergeLiveStockStatus" />
@@ -119,9 +113,9 @@ const disabledAddToCart = computed(() => {
             </div>
           </div>
 
-          <div class="mb-8 font-light prose" v-html="product.shortDescription || product.description" />
+          <div class="mb-8 font-light prose" style="font-family: 'Red Hat Display';" v-html="product.shortDescription || product.description" />
 
-          <hr >
+          <hr>
 
           <form @submit.prevent="addToCart(selectProductInput)">
             <AttributeSelections
@@ -131,7 +125,8 @@ const disabledAddToCart = computed(() => {
               :default-attributes="product.defaultAttributes"
               :variations="product.variations.nodes"
               @attrs-changed="updateSelectedVariations" />
-              <ProductPrice class="text-xl" :sale-price="type.salePrice" :regular-price="type.regularPrice" />
+            
+            <ProductPrice class="text-xl" style="font-family: 'Red Hat Display';" :sale-price="type.salePrice" :regular-price="type.regularPrice" />
 
             <div
               v-if="isVariableProduct || isSimpleProduct"
@@ -141,21 +136,32 @@ const disabledAddToCart = computed(() => {
                 type="number"
                 min="1"
                 aria-label="Quantity"
-                class="bg-white border rounded-lg flex text-left p-2.5 w-20 gap-4 items-center justify-center focus:outline-none" >
-              <AddToCartButton class="flex-1 w-full md:max-w-xs" :disabled="disabledAddToCart" :class="{ loading: isUpdatingCart }" />
+                class="bg-white border rounded-lg flex text-left p-2.5 w-20 gap-4 items-center justify-center focus:outline-none"
+                style="font-family: 'Red Hat Display';">
+              
+              <button
+                type="submit"
+                :disabled="disabledAddToCart"
+                class="flex-1 w-full md:max-w-xs flex items-center justify-center gap-3 px-6 py-3 text-white font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                style="border-radius: 12px; background: var(--Secondary, #FD2D2D); font-family: 'Red Hat Display';">
+                <span v-if="isUpdatingCart">Hozzáadás...</span>
+                <span v-else>Kosárba</span>
+                <div v-if="isUpdatingCart" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              </button>
             </div>
+            
             <a
               v-if="isExternalProduct && product.externalUrl"
               :href="product.externalUrl"
               target="_blank"
-              class="rounded-lg flex font-bold bg-stone-800 text-white text-center min-w-[150px] p-2.5 gap-4 items-center justify-center focus:outline-none">
+              class="rounded-lg flex font-bold text-white text-center min-w-[150px] p-2.5 gap-4 items-center justify-center focus:outline-none"
+              style="border-radius: 12px; background: var(--Secondary, #FD2D2D); font-family: 'Red Hat Display';">
               {{ product?.buttonText || 'View product' }}
             </a>
           </form>
-          
 
           <div v-if="storeSettings.showProductCategoriesOnSingleProduct && product.productCategories">
-            <div class="grid gap-2 my-8 text-sm">
+            <div class="grid gap-2 my-8 text-sm" style="font-family: 'Red Hat Display';">
               <div class="flex items-center gap-2">
                 <span class="text-stone-400">{{ $t('messages.shop.category', 2) }}:</span>
                 <div class="product-categories">
@@ -163,14 +169,15 @@ const disabledAddToCart = computed(() => {
                     v-for="category in product.productCategories.nodes"
                     :key="category.slug"
                     :to="`/product-category/${decodeURIComponent(category.slug)}`"
-                    class="hover:text-primary"
-                    :title="category.name"
-                    >{{ category.name }}<span class="comma">, </span>
+                    class="hover:text-[#FD2D2D] transition-colors"
+                    style="font-family: 'Red Hat Display';"
+                    :title="category.name">
+                    {{ category.name }}<span class="comma">, </span>
                   </NuxtLink>
                 </div>
               </div>
             </div>
-            <hr >
+            <hr>
           </div>
 
           <div class="flex flex-wrap gap-4">
@@ -179,11 +186,15 @@ const disabledAddToCart = computed(() => {
           </div>
         </div>
       </div>
+      
       <div v-if="product.description || product.reviews" class="my-32">
         <ProductTabs :product />
       </div>
+      
       <div v-if="product.related && storeSettings.showRelatedProducts" class="my-32">
-        <div class="mb-4 text-xl font-semibold">{{ $t('messages.shop.youMayLike') }}</div>
+        <div class="mb-4 text-xl font-semibold" style="font-family: 'Red Hat Display'; color: #242424;">
+          {{ $t('messages.shop.youMayLike') }}
+        </div>
         <ProductRow :products="product.related.nodes" class="grid-cols-2 md:grid-cols-4 lg:grid-cols-5" />
       </div>
     </div>

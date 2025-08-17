@@ -4,7 +4,7 @@
     <div class="container mx-auto px-6 sm:px-12">
       <div class="grid lg:grid-cols-2 items-center rounded-[24px] bg-[#F7F7F7]">
         <!-- Szöveg -->
-        <div class="p-8 sm:p-12">
+        <div class="p-8 sm:p-12 mb-10">
           <h2 style="color: var(--Dark, #242424)" class="font-['Red_Hat_Display'] font-[600] text-[30px] lg:text-[38px] text-gray-900">
             Mobilról vezérelhető kapuk
           </h2>

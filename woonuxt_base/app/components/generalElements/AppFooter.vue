@@ -11,12 +11,12 @@
       <div>
         <h3 class="font-bold mb-4">MENÜ</h3>
         <ul class="space-y-2">
-          <li><NuxtLink to="/rolunk">Rólunk</NuxtLink></li>
-          <li><NuxtLink to="/garancia">Garancia</NuxtLink></li>
-          <li><NuxtLink to="/elallasi-jog">Elállási jog</NuxtLink></li>
-          <li><NuxtLink to="/gdpr">GDPR</NuxtLink></li>
-          <li><NuxtLink to="/akcios-termekeink">Akciós termékeink</NuxtLink></li>
-          <li><NuxtLink to="/vasarloi-tajekoztato">Képes vásárlói tájékoztató</NuxtLink></li>
+          <li><NuxtLink to="/">Rólunk</NuxtLink></li>
+          <li><NuxtLink to="/">Garancia</NuxtLink></li>
+          <li><NuxtLink to="/">Elállási jog</NuxtLink></li>
+          <li><NuxtLink to="/">GDPR</NuxtLink></li>
+          <li><NuxtLink to="/">Akciós termékeink</NuxtLink></li>
+          <li><NuxtLink to="/">Képes vásárlói tájékoztató</NuxtLink></li>
         </ul>
       </div>
 

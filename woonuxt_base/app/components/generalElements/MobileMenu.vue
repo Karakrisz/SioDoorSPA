@@ -3,7 +3,7 @@ const { toggleMobileMenu } = useHelpers();
 
 const links = [
   { text: "Termékek", to: "/", prefetch: false },
-  { text: "Garázskapu tervező", to: "/", prefetch: false },
+  { text: "Garázskapu Tervező", to: "/", prefetch: false },
   { text: "Viszonteladóknak", to: "/", prefetch: false },
 ];
 </script>

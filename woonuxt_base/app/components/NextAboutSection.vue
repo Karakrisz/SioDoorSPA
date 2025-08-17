@@ -3,7 +3,7 @@
   <section class="relative w-full overflow-hidden bg-[#FAFAFA] h-[75vh]">
     <div class="grid grid-cols-1 lg:grid-cols-2 h-full">
       <!-- Bal: kép -->
-      <div class="absolute left-0 h-full w-1/2">
+      <div class="relative lg:absolute lg:left-0 lg:h-full lg:w-1/2">
         <img
           src="/img/nextabout.webp"
           alt="Modern automata kétszárnyú kapu meghajtóval"
