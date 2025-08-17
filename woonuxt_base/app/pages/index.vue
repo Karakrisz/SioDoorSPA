@@ -1,8 +1,11 @@
 <template>
   <main>
     <Hero />
-    <Discounts />
     <AboutSection />
+    <Discounts />
+    <NextAboutSection />
+    <ReferencesArticlesSection />
+    <PartnersSection />
     <ContactSection />
     <!-- <BlogSection /> -->
   </main>

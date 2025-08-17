@@ -3,16 +3,16 @@ const { cart, toggleCart, isUpdatingCart } = useCart();
 </script>
 
 <template>
-  <div class="fixed top-0 bottom-0 right-0 z-50 flex flex-col w-11/12 max-w-lg overflow-x-hidden bg-white shadow-lg">
-    <EmptyCart v-if="cart && !cart.isEmpty" class=" absolute top-6 md:left-8 left-6 rounded-lg shadow-lg p-1.5 w-fit hover:bg-red-400 hover:text-white" />
-
+  <div class="fixed top-0 bottom-0 right-0 z-50 flex flex-col w-11/12 max-w-lg overflow-x-hidden bg-white shadow-lg" style="font-family: 'Red Hat Display';">
+    <EmptyCart v-if="cart && !cart.isEmpty" class="absolute top-6 md:left-8 left-6 rounded-lg shadow-lg p-1.5 w-fit hover:bg-red-400 hover:text-white" />
+    
     <Icon name="ion:close-outline" class="absolute p-1 rounded-lg shadow-lg top-6 right-6 md:right-8 cursor-pointer hover:text-primary transition" size="34" @click="toggleCart(false)" />
-
-    <div class="mt-8 text-center">
+    
+    <div class="mt-8 text-center" style="font-family: 'Red Hat Display';">
       {{ $t('messages.shop.cart') }}
       <span v-if="cart?.contents?.productCount"> ({{ cart?.contents?.productCount }}) </span>
     </div>
-
+    
     <ClientOnly>
       <template v-if="cart && !cart.isEmpty">
         <ul class="flex flex-col flex-1 gap-4 p-6 overflow-y-scroll md:p-8">
@@ -20,7 +20,8 @@ const { cart, toggleCart, isUpdatingCart } = useCart();
         </ul>
         <div class="px-8 mb-8">
           <NuxtLink
-            class="bg-primary button justify-evenly"
+            class="flex items-center justify-evenly w-full px-6 py-3 text-white transition-colors"
+            style="border-radius: 12px; background: var(--Secondary, #FD2D2D); font-family: 'Red Hat Display';"
             to="/checkout"
             @click.prevent="toggleCart()">
             <span class="mx-2">{{ $t('messages.shop.checkout') }}</span>

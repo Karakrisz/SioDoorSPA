@@ -4,7 +4,7 @@ const { toggleCart, cart } = useCart();
 
 <template>
   <div class="relative cursor-pointer inline-flex items-center" title="Cart" @click="toggleCart">
-    <Icon name="ph:shopping-cart" size="32" style="color: black" />
+    <Icon class="mt-2" name="ph:shopping-cart" size="33" style="color: black" />
 
     <ClientOnly>
       <Transition name="popIn" mode="out-in">

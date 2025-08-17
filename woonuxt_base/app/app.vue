@@ -20,7 +20,7 @@ watch(
 
 useHead({
   titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk} -  Vasalás Mester` : ' Vasalás Mester';
+    return titleChunk ? `${titleChunk} -  Sió Door Kaputechnika Kft.` : ' Sió Door Kaputechnika Kft.';
   }
 })
 </script>

@@ -33,7 +33,7 @@ const onSaleProducts = computed(() => saleProductsData.value);
 <template>
   <section class="w-full py-[50px]">
     <div class="container product-content">
-      <h2 class="pb-10">AKTUÁLIS AKCIÓINK</h2>
+      <h2 class="pb-10 font-['Red_Hat_Display'] font-[700] text-[30px] lg:text-[38px]">Termékeink</h2>
 
       <TransitionGroup v-if="pending" name="fade" tag="div" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[24px] pb-[35px]">
         <div v-for="i in 3" :key="i" class="animate-pulse">
@@ -51,9 +51,12 @@ const onSaleProducts = computed(() => saleProductsData.value);
         <ProductRow v-else :products="onSaleProducts" class="pb-[35px]" />
       </template>
 
-      <div class="flex gap-[10px] items-center justify-center">
-        <NuxtLink to="/products" class=""> Tovább az teljes étlapra </NuxtLink>
-        <PhosphorIconArrowRight />
+      <div class="flex gap-[10px] items-center justify-end">
+        <NuxtLink to="/products" class="">Összes termék</NuxtLink>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M5 16H27" stroke="#343330" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M18 7L27 16L18 25" stroke="#343330" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
       </div>
     </div>
   </section>

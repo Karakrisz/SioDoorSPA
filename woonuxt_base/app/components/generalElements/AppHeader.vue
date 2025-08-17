@@ -1,19 +1,19 @@
 <script setup lang="ts">
 const links = [
-  { name: 'Mi az a teqball?', link: '/', prefetch: true },
-  { name: 'Termékeink', link: '/' },
-  { name: 'Kapcsolat', link: '/', prefetch: true },
+  { name: 'Termékek', link: '/', prefetch: true },
+  { name: 'Garázskapu Tervező', link: '/' },
+  { name: 'Viszonteladóknak', link: '/', prefetch: true },
 ];
 </script>
 
 <template>
-  <header class="z-50 sticky top-0 bg-white py-4">
+  <header class="z-50 top-0 bg-white py-4">
     <div class="menu container flex justify-between items-center gap-10">
       <!-- Logo bal oldalt -->
       <NuxtLink to="/" class="shrink-0">
         <div class="flex items-center">
-          <span class="text-2xl font-bold text-[#FF5D19] pl-2">
-            <NuxtImg src="/img/logo.svg" class="h-5" />
+          <span class="font-bold text-[#FF5D19] pl-2">
+            <NuxtImg src="/img/logo.webp" class="h-[55px]" />
           </span>
         </div>
       </NuxtLink>
@@ -24,12 +24,12 @@ const links = [
         <MenuTrigger class="lg:hidden" />
         
         <!-- Desktop navigáció -->
-        <div class="space-x-8 lg:flex items-center hidden">
+        <div class="space-x-20 lg:flex items-center hidden">
           <NuxtLink 
             v-for="link in links" 
             :key="link.name" 
             :to="link.link" 
-            class="text-gray-700 hover:text-[#FF5D19] transition-colors duration-200"
+            class="font-['Red_Hat_Display'] font-[600] text-[16px] hover:text-[#FD2D2D] transition-colors duration-200"
           >
             {{ link.name }}
           </NuxtLink>
@@ -37,10 +37,10 @@ const links = [
 
         <!-- Jobb oldali gombok -->
         <div class="flex gap-4">
+          <ProductSearch class="hidden md:inline-flex max-w-[320px]" />
           <SignInLink />
-          
           <!-- CartTrigger wrapper a narancssárga háttérhez -->
-          <div class="bg-[#FF5D19] rounded-md">
+          <div class="rounded-md">
             <CartTrigger class="text-white" />
           </div>
         </div>
@@ -51,12 +51,6 @@ const links = [
 
 <style scoped>
 .menu {
-  margin: auto;
-  margin-top: 2em;
-  margin-bottom: 1em;
-  border-radius: 1.5em;
-  background: var(--Light-Grey, #F3F3F3);
-  padding: 1.3em 2em;
 }
 
 :deep(.cart-trigger) {

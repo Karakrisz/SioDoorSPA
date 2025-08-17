@@ -8,6 +8,10 @@ const props = defineProps({
   index: { type: Number, default: 1 },
 });
 
+// Lokális loading állapot erre a termékre
+const isAddingToCart = ref(false);
+const isAddedToCart = ref(false);
+
 // example: ?filter=pa_color[green,blue],pa_size[large]
 const filterQuery = ref(route.query?.filter as string);
 const paColor = ref(filterQuery.value?.split('pa_color[')[1]?.split(']')[0]?.split(',') || []);
@@ -37,92 +41,171 @@ const imagetoDisplay = computed<string>(() => {
 // Biztonságos slug kezelés
 const safeSlug = computed(() => props.node.slug || '');
 const productUrl = computed(() => safeSlug.value ? `/product/${decodeURIComponent(safeSlug.value)}` : '#');
+
+// Kosárba helyezés kezelése
+const handleAddToCart = async () => {
+  if (!props.node.databaseId || isAddingToCart.value) return;
+  
+  try {
+    isAddingToCart.value = true;
+    await addToCart({ productId: props.node.databaseId, quantity: 1 });
+    
+    // Siker esetén
+    isAddedToCart.value = true;
+    
+    // Hang lejátszása
+    playAddToCartSound();
+    
+    // 2 másodperc után visszaállítjuk az eredeti állapotot
+    setTimeout(() => {
+      isAddedToCart.value = false;
+    }, 2000);
+    
+  } catch (error) {
+    console.error('Hiba a kosárba helyezés során:', error);
+  } finally {
+    isAddingToCart.value = false;
+  }
+};
+
+// Hang lejátszás
+const playAddToCartSound = () => {
+  try {
+    // Egyszerű "ding" hang AudioContext-tel
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch (error) {
+    console.log('Hang lejátszás nem sikerült:', error);
+  }
+};
 </script>
 
 <template>
-  <div class="relative rounded-2xl overflow-hidden bg-black min-h-[600px] group cursor-pointer">
-    <!-- Háttérkép a termékképből -->
-    <div 
-      class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-      :style="`background-image: url('${imagetoDisplay}')`"
-    >
-      <!-- Fekete gradient overlay a szöveg olvashatóságáért -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-    </div>
-
+  <div class="product-card relative bg-white rounded-[24px] border border-[#CCC] overflow-hidden hover:shadow-lg transition-all duration-300 group">
     <!-- Sale Badge -->
     <SaleBadge :node class="absolute top-4 right-4 z-10" />
 
-    <!-- Tartalom -->
-    <div class="relative z-10 p-8 h-full flex flex-col justify-between">
-      <!-- Fejléc -->
-      <div>
-        <h3 class="text-white text-2xl font-bold mb-4 leading-tight">
-          {{ node.name }}
-        </h3>
-      </div>
-
-      <!-- Alsó rész: Leírás, ár és gombok -->
-      <div class="space-y-6">
-        <!-- Termék leírás -->
-        <div 
-          class="text-white/90 text-sm leading-relaxed line-clamp-4"
-          v-html="node.shortDescription"
-        />
-
-        <!-- Méret/specifikáció (ha van) -->
-        <div v-if="node.attributes" class="text-white/80 text-sm font-medium">
-          <!-- Itt lehet megjeleníteni a termék specifikációit -->
-          <!-- Például: Mérete: 3 m × 1,5 m × 0,76 m -->
-        </div>
-
-        <!-- Ár -->
-        <div class="mb-6">
-          <ProductPrice 
-            class="text-lg font-bold text-white" 
-            :sale-price="node.salePrice" 
-            :regular-price="node.regularPrice" 
-          />
-        </div>
-
-        <!-- Gombok -->
-        <div class="flex gap-4">
-          <!-- Részletek gomb -->
-          <NuxtLink 
-            :to="productUrl" 
-            :title="node.name"
-            class="flex-1 px-6 py-3 border-2 border-white/30 text-white font-medium rounded-lg hover:border-white/50 hover:bg-white/10 transition-all duration-200 text-center"
-          >
-            Részletek
-          </NuxtLink>
-
-          <!-- Kosárba gomb -->
-          <NuxtLink 
-            v-if="node.slug" 
-            :to="productUrl" 
-            :title="node.name"
-            class="flex-1 px-6 py-3 bg-[#FF5D19] hover:bg-[#E54A14] text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group"
-          >
-            <span>Kosárba</span>
-            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.6 8M7 13v6a2 2 0 002 2h6a2 2 0 002-2v-6" />
-            </svg>
-          </NuxtLink>
-        </div>
-      </div>
+    <!-- Termék kép -->
+    <div class="relative aspect-[4/3] bg-gray-50 overflow-hidden">
+      <img 
+        :src="imagetoDisplay" 
+        :alt="node.name || 'Termék kép'"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+      />
+      
+      <!-- Hover overlay - finom árnyékolás -->
+      <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     </div>
 
-    <!-- Hover overlay - extra interaktivitás -->
-    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+    <!-- Termék információk -->
+    <div class="p-6 space-y-4">
+      <!-- Termék név -->
+      <h3 class="font-['Montserrat'] font-[600] text-[16px] leading-tight line-clamp-2 uppercase" style="color: #242424;">
+        {{ node.name }}
+      </h3>
+
+      <!-- Termék leírás (opcionális - ha van rövid leírás) -->
+      <div 
+        v-if="node.shortDescription"
+        class="text-gray-600 text-sm leading-relaxed line-clamp-2"
+        v-html="node.shortDescription"
+      />
+
+      <!-- Ár -->
+      <div class="py-2">
+        <ProductPrice 
+          class="font-['Montserrat'] text-xl font-bold" 
+          style="color: #242424;"
+          :sale-price="node.salePrice" 
+          :regular-price="node.regularPrice" 
+        />
+      </div>
+
+      <!-- Kosárba gomb -->
+      <button 
+        v-if="node.slug && node.databaseId"
+        @click="handleAddToCart"
+        :disabled="isAddingToCart"
+        :class="[
+          'w-full py-3 px-6 font-[600] text-[16px] rounded-[12px] transition-all duration-200 flex items-center justify-center gap-2',
+          isAddedToCart 
+            ? 'bg-green-500 text-white' 
+            : 'bg-[#4285F4] hover:bg-[#3367D6] disabled:bg-gray-300 text-white'
+        ]"
+        style="font-family: 'Red Hat Display';"
+      >
+        <span v-if="isAddedToCart">Hozzáadva a kosárhoz</span>
+        <span v-else-if="isAddingToCart">Hozzáadás...</span>
+        <span v-else>Kosárba</span>
+        
+        <!-- Loading spinner -->
+        <div v-if="isAddingToCart" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+        
+        <!-- Checkmark ikon siker esetén -->
+        <svg v-if="isAddedToCart" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </button>
+
+      <!-- Megtekintés link -->
+      <div class="text-center">
+        <NuxtLink 
+          :to="productUrl" 
+          :title="node.name"
+          class="font-['Red_Hat_Display'] font-[600] text-[16px] text-gray-600 hover:text-[#4285F4] transition-colors duration-200"
+        >
+          Megtekintés
+        </NuxtLink>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-/* Line clamp utility a leírás korlátozásához */
-.line-clamp-4 {
+/* Line clamp utilities */
+.line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Product card hover effects */
+.product-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Custom scrollbar if needed */
+.product-card::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ensure consistent height for cards in grid */
+.product-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card > div:last-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 </style>

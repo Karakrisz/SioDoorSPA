@@ -25,11 +25,12 @@ onBeforeMount(async () => {
 const payNow = async () => {
   buttonText.value = t('messages.general.processing');
 
-  const { stripePaymentIntent } = await GqlGetStripePaymentIntent();
-  const clientSecret = stripePaymentIntent?.clientSecret || '';
-
   try {
+    // Csak akkor hívjuk meg a Stripe API-t, ha tényleg Stripe fizetést használunk
     if (orderInput.value.paymentMethod.id === 'stripe' && stripe && elements.value) {
+      const { stripePaymentIntent } = await GqlGetStripePaymentIntent();
+      const clientSecret = stripePaymentIntent?.clientSecret || '';
+
       const cardElement = elements.value.getElement('card') as StripeCardElement;
       const { setupIntent } = await stripe.confirmCardSetup(clientSecret, { payment_method: { card: cardElement } });
       const { source } = await stripe.createSource(cardElement as CreateSourceData);
@@ -43,6 +44,7 @@ const payNow = async () => {
   } catch (error) {
     console.error(error);
     buttonText.value = t('messages.shop.placeOrder');
+    return;
   }
 
   proccessCheckout(isPaid.value);
@@ -76,7 +78,7 @@ useSeoMeta({
         <span class="text-stone-400 mb-4">{{ $t('messages.shop.addProductsInYourCart') }}</span>
         <NuxtLink
           to="/products"
-          class="flex items-center justify-center gap-3 p-2 px-3 mt-4  text-center text-white rounded-lg shadow-md bg-primary hover:bg-primary-dark">
+          class="flex items-center justify-center gap-3 p-2 px-3 mt-4 text-center text-white rounded-lg shadow-md bg-primary hover:bg-primary-dark">
           {{ $t('messages.shop.browseOurProducts') }}
         </NuxtLink>
       </div>
@@ -85,7 +87,7 @@ useSeoMeta({
         <div class="grid w-full max-w-2xl gap-8 checkout-form md:flex-1">
           <!-- Customer details -->
           <div v-if="!viewer && customer.billing">
-            <h2 class="w-full mb-2 text-2xl  leading-none">Elérhetőség</h2>
+            <h2 class="w-full mb-2 text-2xl leading-none">Elérhetőség</h2>
             <p class="mt-1 text-sm text-stone-500">Már van felhasználó fiókja? <a href="/my-account" class="text-primary text-semibold">Bejelentkezés</a>.</p>
             <div class="w-full mt-4">
               <label for="email">{{ $t('messages.billing.email') }}</label>
@@ -97,8 +99,8 @@ useSeoMeta({
                 name="email"
                 :class="{ 'has-error': isInvalidEmail }"
                 required
-                @blur="checkEmailOnBlur(customer.billing.email)"
-                @input="checkEmailOnInput(customer.billing.email)" >
+                @blur="checkEmailOnBlur(customer.billing?.email || null)"
+                @input="checkEmailOnInput(customer.billing?.email || null)">
               <Transition name="scale-y" mode="out-in">
                 <div v-if="isInvalidEmail" class="mt-1 text-sm text-red-500">Hibás email cím</div>
               </Transition>
@@ -106,7 +108,7 @@ useSeoMeta({
             <template v-if="orderInput.createAccount">
               <div class="w-full mt-4">
                 <label for="username">{{ $t('messages.account.username') }}</label>
-                <input v-model="orderInput.username" placeholder="johndoe" autocomplete="username" type="text" name="username" required >
+                <input v-model="orderInput.username" placeholder="johndoe" autocomplete="username" type="text" name="username" required>
               </div>
               <div v-if="orderInput.createAccount" class="w-full my-2">
                 <label for="email">{{ $t('messages.account.password') }}</label>
@@ -115,56 +117,60 @@ useSeoMeta({
             </template>
             <div v-if="!viewer" class="flex items-center gap-2 my-2">
               <label for="creat-account">Felhasználó létrehozása</label>
-              <input id="creat-account" v-model="orderInput.createAccount" type="checkbox" name="creat-account" >
+              <input id="creat-account" v-model="orderInput.createAccount" type="checkbox" name="creat-account">
             </div>
           </div>
 
           <div>
-            <h2 class="w-full mb-3 text-2xl ">{{ $t('messages.billing.billingDetails') }}</h2>
-            <BillingDetails v-model="customer.billing" />
+            <h2 class="w-full mb-3 text-2xl">{{ $t('messages.billing.billingDetails') }}</h2>
+            <BillingDetails v-if="customer.billing" v-model="customer.billing" />
           </div>
 
-          <label v-if="cart.availableShippingMethods.length > 0" for="shipToDifferentAddress" class="flex items-center gap-2">
+          <label v-if="cart.availableShippingMethods && cart.availableShippingMethods.length > 0" for="shipToDifferentAddress" class="flex items-center gap-2">
             <span>{{ $t('messages.billing.differentAddress') }}</span>
-            <input id="shipToDifferentAddress" v-model="orderInput.shipToDifferentAddress" type="checkbox" name="shipToDifferentAddress" >
+            <input id="shipToDifferentAddress" v-model="orderInput.shipToDifferentAddress" type="checkbox" name="shipToDifferentAddress">
           </label>
 
           <Transition name="scale-y" mode="out-in">
             <div v-if="orderInput.shipToDifferentAddress">
-              <h2 class="mb-4 text-xl ">{{ $t('messages.general.shippingDetails') }}</h2>
-              <ShippingDetails v-model="customer.shipping" />
+              <h2 class="mb-4 text-xl">{{ $t('messages.general.shippingDetails') }}</h2>
+              <ShippingDetails v-if="customer.shipping" v-model="customer.shipping" />
             </div>
           </Transition>
 
           <!-- Shipping methods -->
-          <div v-if="cart.availableShippingMethods.length">
-            <h3 class="mb-4 ">{{ $t('messages.general.shippingSelect') }}</h3>
-            <ShippingOptions :options="cart.availableShippingMethods[0].rates" :active-option="cart.chosenShippingMethods[0]" />
+          <div v-if="cart.availableShippingMethods && cart.availableShippingMethods.length > 0">
+            <h3 class="mb-4">{{ $t('messages.general.shippingSelect') }}</h3>
+            <ShippingOptions 
+              v-if="cart.availableShippingMethods[0]?.rates && cart.chosenShippingMethods && cart.chosenShippingMethods[0]"
+              :options="cart.availableShippingMethods[0].rates" 
+              :active-option="cart.chosenShippingMethods[0]" 
+            />
           </div>
 
           <!-- Pay methods -->
-          <div v-if="paymentGateways?.nodes.length" class="mt-2 col-span-full">
-            <h2 class="mb-4 text-xl ">{{ $t('messages.billing.paymentOptions') }}</h2>
+          <div v-if="paymentGateways?.nodes && paymentGateways.nodes.length > 0" class="mt-2 col-span-full">
+            <h2 class="mb-4 text-xl">{{ $t('messages.billing.paymentOptions') }}</h2>
             <PaymentOptions v-model="orderInput.paymentMethod" class="mb-4" :payment-gateways />
             <StripeElement v-if="stripe" v-show="orderInput.paymentMethod.id == 'stripe'" :stripe @update-element="handleStripeElement" />
           </div>
 
           <!-- Order note -->
           <div>
-            <h2 class="mb-4 text-xl ">{{ $t('messages.shop.orderNote') }} ({{ $t('messages.general.optional') }})</h2>
+            <h2 class="mb-4 text-xl">{{ $t('messages.shop.orderNote') }} ({{ $t('messages.general.optional') }})</h2>
             <textarea
               id="order-note"
               v-model="orderInput.customerNote"
               name="order-note"
               class="w-full min-h-[100px]"
               rows="4"
-              :placeholder="$t('messages.shop.orderNotePlaceholder')"/>
+              :placeholder="$t('messages.shop.orderNotePlaceholder')" />
           </div>
         </div>
 
         <OrderSummary>
           <button
-            class="flex items-center justify-center w-full gap-3 p-3 mt-4  text-center text-white rounded-lg shadow-md bg-primary hover:bg-primary-dark disabled:cursor-not-allowed disabled:bg-stone-400"
+            class="flex items-center justify-center w-full gap-3 p-3 mt-4 text-center text-white rounded-lg shadow-md bg-primary hover:bg-primary-dark disabled:cursor-not-allowed disabled:bg-stone-400"
             :disabled="isCheckoutDisabled">
             {{ buttonText }}<LoadingIcon v-if="isProcessingOrder" color="#fff" size="18" />
           </button>

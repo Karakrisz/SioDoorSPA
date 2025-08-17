@@ -26,7 +26,8 @@ export default {
         'medium': '0px 1px 7px 0px rgba(0, 0, 0, 0.20)'
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        display: ['Red Hat Display', 'sans-serif'], 
+        montserrat: ['Montserrat', 'sans-serif'], // hozzáadva
       },
     },
     container: {

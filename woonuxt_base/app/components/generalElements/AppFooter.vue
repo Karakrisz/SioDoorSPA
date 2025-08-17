@@ -1,80 +1,59 @@
-<script setup lang="ts">
-const footerLinks = [
-  { name: 'Mi az a teqball?', link: '/teqball' },
-  { name: 'Termékeink', link: '/products' },
-  { name: 'Kapcsolat', link: '/contact' },
-  { name: 'Kosaram', link: '/cart' },
-  { name: 'Adatkezelési Nyilatkozat', link: '/privacy-policy' },
-  { name: 'Hivatalos TeqBall oldal', link: 'https://teqball.com', external: true },
-]
-</script>
-
 <template>
-  <footer class="bg-white">
-    <div class="container mx-auto px-4 py-8">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-        
-        <!-- Bal oldal: Logo -->
-        <div class="flex-shrink-0">
-          <NuxtLink to="/" class="block">
-            <NuxtImg 
-              src="/img/footer-logo.svg" 
-              alt="G TEO SPORT" 
-              class="h-5 w-auto"
-            />
-          </NuxtLink>
-        </div>
+  <footer class="bg-[#4A8FF6] text-white py-10 font-montserrat">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      
+      <!-- Logo -->
+      <div class="flex flex-col gap-4">
+        <img src="/img/footer-logo.svg" alt="SioDoor" class="w-40" />
+      </div>
 
-        <!-- Középső rész: Navigációs linkek -->
-        <nav class="flex flex-wrap justify-center items-center gap-6 md:gap-8">
-          <NuxtLink 
-            v-for="link in footerLinks" 
-            :key="link.name"
-            :to="link.link"
-            :target="link.external ? '_blank' : '_self'"
-            :rel="link.external ? 'noopener noreferrer' : ''"
-            class="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm md:text-base whitespace-nowrap"
-          >
-            {{ link.name }}
-          </NuxtLink>
-        </nav>
+      <!-- Menü -->
+      <div>
+        <h3 class="font-bold mb-4">MENÜ</h3>
+        <ul class="space-y-2">
+          <li><NuxtLink to="/rolunk">Rólunk</NuxtLink></li>
+          <li><NuxtLink to="/garancia">Garancia</NuxtLink></li>
+          <li><NuxtLink to="/elallasi-jog">Elállási jog</NuxtLink></li>
+          <li><NuxtLink to="/gdpr">GDPR</NuxtLink></li>
+          <li><NuxtLink to="/akcios-termekeink">Akciós termékeink</NuxtLink></li>
+          <li><NuxtLink to="/vasarloi-tajekoztato">Képes vásárlói tájékoztató</NuxtLink></li>
+        </ul>
+      </div>
 
-        <!-- Jobb oldal: Digital Seed Studio logo -->
-        <div class="flex-shrink-0">
-          <a 
-            href="https://digitalseed.hu" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="block opacity-60 hover:opacity-100 transition-opacity duration-200"
-            title="Digital Seed Studio"
-          >
-            <NuxtImg 
-              src="/img/digitalseed.svg" 
-              alt="Digital Seed Studio" 
-              class="h-10 w-auto"
-            />
-          </a>
-        </div>
+      <!-- Információk -->
+      <div>
+        <h3 class="font-bold mb-4">INFORMÁCIÓK</h3>
+        <ul class="space-y-2 mb-6">
+          <li><NuxtLink to="/cookie">Cookie tájékoztató</NuxtLink></li>
+          <li><NuxtLink to="/adatkezelesi-tajekoztato">Adatkezelési tájékoztató</NuxtLink></li>
+          <li><NuxtLink to="/aszf">ÁSZF</NuxtLink></li>
+          <li><NuxtLink to="/gyik">Gyakran ismételt kérdések</NuxtLink></li>
+          <li><NuxtLink to="/cegadatok">Cég adatok, elérhetőségek</NuxtLink></li>
+          <li><NuxtLink to="/visszavetel">Visszavételi és jótállási feltételek</NuxtLink></li>
+        </ul>
+        <a href="https://digitalseed.hu/" target="_blank">
+          <img src="/img/digitalseed.svg" alt="Digital Seed Studio" class="h-6" />
+        </a>
+      </div>
 
+      <!-- Segítség -->
+      <div>
+        <h3 class="font-bold mb-4">SEGÍTSÉG</h3>
+        <p class="mb-4">
+          <strong>Nem tudja megrendelni termékét webshopunkban?</strong><br />
+          Semmi gond! Írja meg nekünk a 
+          <a href="mailto:megrendeles@siodoor.hu" class="underline">megrendeles@siodoor.hu</a> e-mail-címre, és kollégánk segít Önnek a rendelés felvételében.
+        </p>
+        <p class="mb-4">
+          <strong>Kérdése van a termékeinkkel kapcsolatban?</strong><br />
+          Írjon nekünk az 
+          <a href="mailto:info@siodoor.hu" class="underline">info@siodoor.hu</a> címre, és készséggel válaszolunk.
+        </p>
+        <p>
+          <strong>Elakadt a programozással?</strong><br />
+          Hívjon: <a href="tel:+36305855620" class="underline">+36 30 585 5620</a>
+        </p>
       </div>
     </div>
   </footer>
 </template>
-
-<style scoped>
-.container {
-  max-width: 1200px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  nav {
-    order: 3;
-    width: 100%;
-  }
-  
-  .flex-shrink-0:last-child {
-    order: 2;
-  }
-}
-</style>

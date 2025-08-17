@@ -1,29 +1,29 @@
 <template>
-  <form class="bg-white rounded-lg shadow mt-4" @submit.prevent="updatePassword">
+  <form class="bg-white rounded-lg shadow mt-4" style="font-family: 'Red Hat Display';" @submit.prevent="updatePassword">
     <div class="grid p-8 gap-6 md:grid-cols-2">
-      <h3 class="font-semibold text-xl col-span-full">{{ $t('messages.account.changePassword') }}</h3>
+      <h3 class="font-semibold text-xl col-span-full" style="font-family: 'Red Hat Display';">{{ $t('messages.account.changePassword') }}</h3>
 
       <input v-model="viewer.username" type="text" name="username" autocomplete="username" style="display: none;">
 
       <div class="w-full">
-        <label for="new-password">{{ $t('messages.account.newPassword') }}</label>
+        <label for="new-password" style="font-family: 'Red Hat Display';">{{ $t('messages.account.newPassword') }}</label>
         <PasswordInput id="new-password" v-model="password.new" placeholder="••••••••••" type="text" required />
       </div>
 
       <div class="w-full">
-        <label for="new-password-confirm">{{ $t('messages.account.confirmNewPassword') }}</label>
+        <label for="new-password-confirm" style="font-family: 'Red Hat Display';">{{ $t('messages.account.confirmNewPassword') }}</label>
         <PasswordInput id="new-password-confirm" v-model="password.confirm" placeholder="••••••••••" type="text" required />
       </div>
 
       <Transition name="scale-y" mode="out-in">
-        <div v-if="errorMessage" class="w-full text-sm text-red-500" v-html="errorMessage"/>
+        <div v-if="errorMessage" class="w-full text-sm text-red-500" style="font-family: 'Red Hat Display';" v-html="errorMessage"/>
       </Transition>
     </div>
 
     <div class="bg-white backdrop-blur-sm bg-opacity-75 border-t col-span-full p-4 sticky bottom-0 rounded-b-lg">
       <button
-      class="ml-auto button button-primary"
-      :class="button.color"
+        class="ml-auto flex items-center justify-center gap-3 px-6 py-3 text-white transition-colors"
+        style="border-radius: 12px; background: var(--Secondary, #FD2D2D); font-family: 'Red Hat Display';"
         :disabled="loading">
         <LoadingIcon v-if="loading" color="#fff" size="20" />
         <span>{{ button.text }}</span>
@@ -38,7 +38,10 @@ const { t } = useI18n();
 
 const password = ref<{ new: string; confirm: string }>({ new: '', confirm: '' });
 const loading = ref<boolean>(false);
-const button = ref<{ text: string; color: string }>({ text: t('messages.account.updatePassword'), color: 'bg-primary hover:bg-primary-dark' });
+const button = ref<{ text: string; color: string }>({ 
+  text: t('messages.account.updatePassword'), 
+  color: 'bg-primary hover:bg-primary-dark' 
+});
 const errorMessage = ref<string>('');
 
 const updatePassword = async () => {
