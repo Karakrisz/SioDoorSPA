@@ -10,6 +10,14 @@ interface GraphQLTerm {
   count?: number | null;
 }
 
+interface GraphQLResponse {
+  data?: {
+    terms?: {
+      nodes?: GraphQLTerm[];
+    };
+  };
+}
+
 interface Term {
   taxonomyName: string;
   name: string;
@@ -47,21 +55,65 @@ const transformTerm = (graphqlTerm: GraphQLTerm): Term => ({
   count: graphqlTerm.count || 0
 });
 
+// Fallback: közvetlen GraphQL fetch
+const fetchTermsData = async () => {
+  try {
+    const response = await $fetch<GraphQLResponse>('https://yousite.hu/siodoor/graphql', {
+      method: 'POST',
+      body: {
+        query: `
+          query getAllTerms($taxonomies: [TaxonomyEnum]) {
+            terms(where: { taxonomies: $taxonomies }) {
+              nodes {
+                taxonomyName
+                name
+                slug
+                count
+              }
+            }
+          }
+        `,
+        variables: {
+          taxonomies: [...taxonomies, TaxonomyEnum.PRODUCTCATEGORY]
+        }
+      }
+    });
+    
+    return response?.data?.terms?.nodes || [];
+  } catch (error) {
+    console.error('GraphQL fetch error:', error);
+    return [];
+  }
+};
+
 onMounted(async () => {
   try {
     isLoading.value = true;
-    const { data } = await useAsyncGql('getAllTerms', { 
-      taxonomies: [...taxonomies, TaxonomyEnum.PRODUCTCATEGORY] 
-    });
     
-    // Transform the GraphQL response to our Term type
-    const graphqlTerms = data.value?.terms?.nodes as GraphQLTerm[] || [];
-    terms.value = graphqlTerms.map(transformTerm);
+    // Próbáld meg először useAsyncGql-lel
+    try {
+      const { data } = await useAsyncGql('getAllTerms', { 
+        taxonomies: [...taxonomies, TaxonomyEnum.PRODUCTCATEGORY] 
+      });
+      
+      if (data.value?.terms?.nodes) {
+        const graphqlTerms = data.value.terms.nodes as GraphQLTerm[] || [];
+        terms.value = graphqlTerms.map(transformTerm);
+      } else {
+        throw new Error('No data from useAsyncGql');
+      }
+    } catch (gqlError) {
+      // Fallback: közvetlen fetch
+      const fallbackData = await fetchTermsData();
+      terms.value = fallbackData.map(transformTerm);
+    }
     
+    // Kategóriák szűrése
     productCategoryTerms.value = terms.value.filter(
       (term) => term.taxonomyName === 'product_cat'
     );
     
+    // Attribútumok feldolgozása
     attributesWithTerms.value = globalProductAttributes.map((attr) => ({
       ...attr,
       terms: terms.value.filter((term) => term.taxonomyName === attr.slug)
